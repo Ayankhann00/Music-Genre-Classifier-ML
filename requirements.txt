@@ -1,8 +1,7 @@
-streamlit
-librosa
-numpy
 pandas
+numpy
 scikit-learn
-joblib
+seaborn
 matplotlib
-soundfile
+streamlit
+joblib
