@@ -1,22 +1,20 @@
 import streamlit as st
 import pandas as pd
-import joblib
+import numpy as np
+import pickle
+from sklearn.preprocessing import StandardScaler
 
-st.title("🎵 Music Genre Classification (Lightweight Model)")
+with open("genre_classifier.pkl", "rb") as f:
+    model = pickle.load(f)
 
-model, scaler, pca, le = joblib.load("music_genre.pkl")
+st.title("🎵 Music Genre Classifier")
+st.write("Upload pre-extracted feature CSV (single row) to predict genre.")
 
-uploaded_file = st.file_uploader("Upload CSV file with features", type=["csv"])
+uploaded_file = st.file_uploader("Upload CSV", type=["csv"])
 
-if uploaded_file:
-    df = pd.read_csv(uploaded_file)
-    if "filename" in df.columns:
-        df = df.drop("filename", axis=1)
-
-    X_scaled = scaler.transform(df)
-    X_pca = pca.transform(X_scaled)
-    predictions = model.predict(X_pca)
-    predicted_labels = le.inverse_transform(predictions)
-
-    result = pd.DataFrame({"Prediction": predicted_labels})
-    st.write(result)
+if uploaded_file is not None:
+    data = pd.read_csv(uploaded_file)
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(data)
+    prediction = model.predict(X_scaled)
+    st.success(f"Predicted Genre: {prediction[0]}")
